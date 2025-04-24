@@ -2,26 +2,27 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
-using ReportPortal.XUnitReporter.LogHandler.Messages;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using Xunit;
-using Xunit.Abstractions;
+using ReportPortal.XUnitReporter.V3.LogHandler.Messages;
+using Xunit.Runner.Common;
+using Xunit.Sdk;
 
-namespace ReportPortal.XUnitReporter
+
+namespace ReportPortal.XUnitReporter.V3
 {
     public partial class ReportPortalReporterMessageHandler
     {
-        protected virtual void HandleTestStarting(MessageHandlerArgs<ITestStarting> args)
+        protected new virtual void HandleTestStarting(MessageHandlerArgs<ITestStarting> args)
         {
             try
             {
                 var testEvent = args.Message;
-                string key = testEvent.Test.TestCase.UniqueID.ToString();
+                string key = testEvent.TestCaseUniqueID;
 
                 var attrbutes = new List<ItemAttribute>();
-                foreach (var trait in args.Message.Test.TestCase.Traits)
+                foreach (var trait in args.Message.Traits)
                 {
                     foreach (var value in trait.Value)
                     {
@@ -29,10 +30,10 @@ namespace ReportPortal.XUnitReporter
                     }
                 }
 
-                ITestReporter testReporter = TestReporterDictionary[testEvent.TestCollection.UniqueID.ToString()].StartChildTestReporter(
+                ITestReporter testReporter = TestReporterDictionary[testEvent.TestCollectionUniqueID].StartChildTestReporter(
                     new StartTestItemRequest()
                     {
-                        Name = testEvent.Test.DisplayName,
+                        Name = testEvent.TestDisplayName,
                         StartTime = DateTime.UtcNow,
                         Type = TestItemType.Step,
                         Attributes = attrbutes
@@ -55,7 +56,7 @@ namespace ReportPortal.XUnitReporter
             try
             {
                 var testEvent = args.Message;
-                string key = testEvent.Test.TestCase.UniqueID;
+                string key = testEvent.TestCaseUniqueID;
 
                 ITestReporter testReporter = TestReporterDictionary[key];
 
@@ -99,7 +100,7 @@ namespace ReportPortal.XUnitReporter
             try
             {
                 var testEvent = args.Message;
-                string key = testEvent.Test.TestCase.UniqueID;
+                string key = testEvent.TestCaseUniqueID;
 
                 ITestReporter testReporter = TestReporterDictionary[key];
 
@@ -134,7 +135,7 @@ namespace ReportPortal.XUnitReporter
             try
             {
                 var testEvent = args.Message;
-                string key = testEvent.Test.TestCase.UniqueID;
+                string key = testEvent.TestCaseUniqueID;
 
                 ITestReporter testReporter = TestReporterDictionary[key];
 
@@ -162,7 +163,7 @@ namespace ReportPortal.XUnitReporter
             try
             {
                 var testEvent = args.Message;
-                string key = testEvent.Test.TestCase.UniqueID;
+                string key = testEvent.TestCaseUniqueID;
 
                 ITestReporter testReporter = TestReporterDictionary[key];
 

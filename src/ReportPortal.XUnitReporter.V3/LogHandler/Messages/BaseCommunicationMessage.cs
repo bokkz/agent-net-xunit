@@ -1,4 +1,4 @@
-﻿namespace ReportPortal.XUnitReporter.LogHandler.Messages
+﻿namespace ReportPortal.XUnitReporter.V3.LogHandler.Messages
 {
     class BaseCommunicationMessage
     {

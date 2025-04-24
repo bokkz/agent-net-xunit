@@ -1,10 +1,11 @@
-﻿using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Configuration;
 using System;
 using System.IO;
-using Xunit;
-using Xunit.Abstractions;
+using System.Threading.Tasks;
 
-namespace ReportPortal.XUnitReporter
+using Xunit.Runner.Common;
+
+namespace ReportPortal.XUnitReporter.V3
 {
     public class ReportPortalReporter : IRunnerReporter
     {
@@ -16,13 +17,19 @@ namespace ReportPortal.XUnitReporter
 
             _config = new ConfigurationBuilder().AddDefaults(currentDirectory).Build();
         }
-
+        
+        public bool CanBeEnvironmentallyEnabled => true;
         public string Description => "Reporting tests results to Report Portal";
+        public bool ForceNoLogo => false;
 
         public bool IsEnvironmentallyEnabled => _config.GetValue("enabled", true);
 
         public string RunnerSwitch => "reportportal";
-
-        public IMessageSink CreateMessageHandler(IRunnerLogger logger) => new ReportPortalReporterMessageHandler(logger, _config);
+        
+        public ValueTask<IRunnerReporterMessageHandler> CreateMessageHandler(IRunnerLogger logger, Xunit.Sdk.IMessageSink diagnosticMessageSink)
+        {
+            return new ValueTask<IRunnerReporterMessageHandler>(new ReportPortalReporterMessageHandler(logger, _config, diagnosticMessageSink));
+        }
+        
     }
 }

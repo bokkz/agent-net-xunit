@@ -1,18 +1,23 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/2ltljpbft1ofxr32/branch/master?svg=true)](https://ci.appveyor.com/project/nvborisenko/agent-net-xunit/branch/master)
 
-There are 2 ways to use ReportPortal with xUnit framework, it's depent on runner.
+# ReportPortal integration for xUnit v3
 
-- [Visual Studio Runner](#visual-studio-runner)
-- [xunit.console.exe](#xunitconsoleexe)
+## Important Note about xUnit v3 Custom Reporters
 
-# Visual Studio Runner
+According to xUnit v3 documentation, custom runner reporters are only supported by the in-process console runner. This means:
 
-This way is applicable if you use xunit with `xunit.runner.visualstudio` nuget package.
+- Custom reporters work only when directly running the test project (by directly invoking the test project .exe or when using `dotnet run`)
+- Custom reporters are **not supported** by multi-assembly runners like:
+  - xunit.v3.runner.console
+  - xunit.v3.runner.msbuild
+  - xunit.runner.visualstudio (which means they don't work with `dotnet test` or Test Explorer)
+
+This is a limitation of xUnit v3's design, where test projects are stand-alone executables.
 
 ## Installation
-Install `ReportPortal.XUnit` nuget package in project with xunit tests.
+Install `ReportPortal.XUnit.V3` NuGet package in your xUnit v3 test project.
 
-[![NuGet Badge](https://buildstats.info/nuget/reportportal.xunit)](https://www.nuget.org/packages/reportportal.xunit)
+[![NuGet Badge](https://buildstats.info/nuget/reportportal.xunit.v3)](https://www.nuget.org/packages/reportportal.xunit.v3)
 
 ## Configuration
 Add `ReportPortal.json` file to the test project.
@@ -37,63 +42,88 @@ Add `ReportPortal.json` file to the test project.
 
 Read [more](https://github.com/reportportal/commons-net/blob/master/docs/Configuration.md) about configuration of other available options and alternative ways how to provide options.
 
-## Run tests
-Now if you execute tests via `dotnet test`, or `dotnet vstest`, or `vstest.console.exe`, you should see real-time report.
+## Auto-Registration
 
-# xunit.console.exe
+The ReportPortal.XUnit.V3 package includes an auto-registration mechanism that automatically registers the ReportPortal reporter with xUnit v3. This is done through MSBuild integration using .targets and .props files that are included in the package.
 
-If you execute tests with `xunit.console.exe` runner.
+## Running Tests
 
-## Installation
-Download zip archive from the `Releases` tab and extract it into the folder with `xunit.console.exe`. After downloading zip file, make sure Windows didn't block it: right click on zip -> Properties -> Unblock.
+Due to xUnit v3's limitations for custom reporters, you can only use the ReportPortal reporter when running tests directly:
 
-2 files should be placed in the same folder:
-- xunit.console.exe
-- ReportPortal.XUnitReporter.dll
+```bash
+# Navigate to your test project directory
+cd path/to/your/test/project
 
-> Note: Supports only xUnit v2.4.1. Awaiting [issue](https://github.com/xunit/xunit/issues/1874) with ability to use custom reporters.
+# Build the project
+dotnet build
 
-To verify whether reporter is available, execute `xunit.console.exe` without parameters. `-reportportal` should be listed in Reporters section.
+# Run the tests directly using the executable
+./bin/Debug/netcoreapp3.1/YourTestProject.exe
 
-## Configuration
-Configure connection with Report Portal server in `ReportPortal.config.json` file. Sample is already included in zip archive.
+# Or using dotnet run
+dotnet run
+```
 
-## Run tests
-Just execute your tests as you do it usually. Test results are automatically will be sent during execution.
+### Important Limitations
 
-# Integrate logger framework
+⚠️ The following methods of running tests **will not work** with the ReportPortal reporter due to xUnit v3 limitations:
+
+- `dotnet test`
+- `dotnet vstest`
+- `vstest.console.exe`
+- Visual Studio Test Explorer
+- xunit.v3.runner.console.exe
+
+This is because these runners do not support custom reporters in xUnit v3.
+
+
+## Additional Resources
+
+- [xUnit v3 Documentation](https://xunit.net/docs/v3-alpha)
+- [ReportPortal Documentation](https://reportportal.io/docs)
+
+
+
+## Integrating Logger Frameworks with xUnit v3
+
+You can integrate various logging frameworks with ReportPortal:
+
 - [NLog](https://github.com/reportportal/logger-net-nlog)
 - [log4net](https://github.com/reportportal/logger-net-log4net)
 - [Serilog](https://github.com/reportportal/logger-net-serilog)
 - [System.Diagnostics.TraceListener](https://github.com/reportportal/logger-net-tracelistener)
 
-By default xunit doesn't have capturing test output mechanism. To make log frameworks to put messages to ReportPortal, you have to declare `ITestOutputHelper` object in fixture class constructor, and attach ReportPortal to it.
+In xUnit v3, you can capture test output by declaring an `ITestOutputHelper` in your test class constructor and attaching ReportPortal to it:
 
 ```csharp
-class MyTests
+using Xunit;
+using Xunit.Abstractions;
+
+public class MyTests
 {
-  private ITestOutputHelper _output;
+    private readonly ITestOutputHelper _output;
 
-  public MyTests(ITestOutputHelper output)
-  {
-    _output = output.WithReportPortal();
-  }
+    public MyTests(ITestOutputHelper output)
+    {
+        _output = output.WithReportPortal();
+    }
 
-  [Fact]
-  public void MyTest1()
-  {
-    _output.WriteLine("my message"); // this message goes to test output, will see it at the end of test
-    ReportPortal.Shared.Log.Info("my message"); // this message goes immediately to Report Portal
-
-    // or use log framework to produce messages
-  }
+    [Fact]
+    public void MyTest1()
+    {
+        _output.WriteLine("My message");
+        // This message will be sent to ReportPortal
+    }
 }
 ```
 
-And [how](https://github.com/reportportal/commons-net/blob/master/docs/Logging.md) you can improve your logging experience with attachments or nested steps.
+See [here](https://github.com/reportportal/commons-net/blob/master/docs/Logging.md) for more information on how to improve your logging experience with attachments or nested steps.
 
+## Contributing
 
-# Useful extensions
+If you have any questions or issues with the ReportPortal xUnit v3 integration, please create an issue in the repository.
+
+## Useful Extensions
 - [Skippable](https://github.com/nvborisenko/reportportal-extensions-skippable) marks skipped tests as `No Defect` automatically
 - [SourceBack](https://github.com/nvborisenko/reportportal-extensions-sourceback) adds piece of test code where test was failed
 - [Insider](https://github.com/nvborisenko/reportportal-extensions-insider) brings more reporting capabilities without coding like methods invocation as nested steps

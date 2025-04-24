@@ -2,10 +2,10 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
-using Xunit;
-using Xunit.Abstractions;
+using Xunit.Runner.Common;
+using Xunit.Sdk;
 
-namespace ReportPortal.XUnitReporter
+namespace ReportPortal.XUnitReporter.V3
 {
     public partial class ReportPortalReporterMessageHandler
     {
@@ -13,17 +13,17 @@ namespace ReportPortal.XUnitReporter
         /// Starting test suite in report portal.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void HandleTestCollectionStarting(MessageHandlerArgs<ITestCollectionStarting> args)
+        protected new virtual void HandleTestCollectionStarting(MessageHandlerArgs<ITestCollectionStarting> args)
         {
             try
             {
                 var testCollection = args.Message;
-                string key = testCollection.TestCollection.UniqueID.ToString();
+                string key = testCollection.TestCollectionUniqueID;
 
                 ITestReporter testReporter = _launchReporter.StartChildTestReporter(
                     new StartTestItemRequest()
                     {
-                        Name = testCollection.TestCollection.DisplayName,
+                        Name = testCollection.TestCollectionDisplayName,
                         StartTime = DateTime.UtcNow,
                         Type = TestItemType.Suite
                     });
@@ -40,12 +40,12 @@ namespace ReportPortal.XUnitReporter
         /// Finishing test suite in report portal.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void HandleTestCollectionFinished(MessageHandlerArgs<ITestCollectionFinished> args)
+        protected new virtual void HandleTestCollectionFinished(MessageHandlerArgs<ITestCollectionFinished> args)
         {
             try
             {
                 var testCollection = args.Message;
-                string key = testCollection.TestCollection.UniqueID.ToString();
+                string key = testCollection.TestCollectionUniqueID;
 
                 TestReporterDictionary[key].Finish(new FinishTestItemRequest()
                 {
