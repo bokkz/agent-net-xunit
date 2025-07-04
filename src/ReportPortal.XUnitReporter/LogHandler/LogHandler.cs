@@ -1,19 +1,19 @@
-﻿using ReportPortal.Shared;
-using ReportPortal.Shared.Execution.Logging;
-using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Extensibility.Commands;
-using ReportPortal.Shared.Internal.Logging;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using ReportPortal.XUnitReporter.V3.LogHandler.Messages;
+using ReportPortal.Shared;
+using ReportPortal.Shared.Execution.Logging;
+using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.Commands;
+using ReportPortal.Shared.Internal.Logging;
+using ReportPortal.XUnitReporter.LogHandler.Messages;
 using Xunit;
 using Xunit.Runner.Common;
 using Xunit.Sdk;
 
-namespace ReportPortal.XUnitReporter.V3.LogHandler
+namespace ReportPortal.XUnitReporter.LogHandler
 {
     public class LogHandler : ICommandsListener
     {

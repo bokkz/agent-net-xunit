@@ -1,16 +1,15 @@
-﻿using ReportPortal.Client.Abstractions.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using ReportPortal.XUnitReporter.V3.LogHandler.Messages;
+using ReportPortal.XUnitReporter.LogHandler.Messages;
 using Xunit.Runner.Common;
 using Xunit.Sdk;
 
-
-namespace ReportPortal.XUnitReporter.V3
+namespace ReportPortal.XUnitReporter
 {
     public partial class ReportPortalReporterMessageHandler
     {

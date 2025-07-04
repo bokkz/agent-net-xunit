@@ -1,11 +1,11 @@
+using System.Collections.Concurrent;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Reporter;
-using System.Collections.Concurrent;
 using Xunit.Runner.Common;
 using Xunit.Sdk;
 
-namespace ReportPortal.XUnitReporter.V3
+namespace ReportPortal.XUnitReporter
 {
     public partial class ReportPortalReporterMessageHandler : DefaultRunnerReporterMessageHandler, IRunnerReporterMessageHandler
     {

@@ -1,11 +1,10 @@
-using ReportPortal.Shared.Configuration;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-
+using ReportPortal.Shared.Configuration;
 using Xunit.Runner.Common;
 
-namespace ReportPortal.XUnitReporter.V3
+namespace ReportPortal.XUnitReporter
 {
     public class ReportPortalReporter : IRunnerReporter
     {

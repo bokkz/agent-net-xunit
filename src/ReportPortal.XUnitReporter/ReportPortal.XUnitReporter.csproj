@@ -16,6 +16,7 @@
 
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>ReportPortal.XUnitReporter</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,12 +1,14 @@
 ﻿
 
-namespace Xunit
+using Xunit;
+
+namespace ReportPortal.XUnitReporter.LogHandler
 {
     public static class OutputHelperExtensions
     {
         public static ITestOutputHelper WithReportPortal(this ITestOutputHelper outputHelper)
         {
-            ReportPortal.XUnitReporter.V3.LogHandler.LogHandler.XunitTestOutputHelper = outputHelper;
+            LogHandler.XunitTestOutputHelper = outputHelper;
 
             return outputHelper;
         }
